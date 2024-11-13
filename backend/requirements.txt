@@ -1,0 +1,4 @@
+flask
+flask-cors
+opencv-python-headless  # Versão de OpenCV sem interface gráfica, ideal para Docker
+deepface
