@@ -1,15 +1,12 @@
-# Emotion Analysis
-Uma ferramenta interativa para análise de emoções baseada em Inteligência Artificial
-
 # 📋 Sobre o Projeto
-O Emotion Analysis é uma aplicação desenvolvida para analisar e interpretar emoções através de textos fornecidos pelo usuário. Utilizando algoritmos de processamento de linguagem natural, o sistema identifica o sentimento expresso no texto, oferecendo insights úteis e imediatos sobre o estado emocional.
+O Emotion Analysis é uma aplicação projetada para analisar e interpretar emoções em textos fornecidos pelo usuário. Utilizando algoritmos de Processamento de Linguagem Natural (PLN), o sistema identifica o sentimento predominante no texto (como positivo, negativo ou neutro) e fornece insights úteis sobre o estado emocional expresso.
 
 # 🚀 Funcionalidades
-Análise de Sentimentos: Com base no texto inserido, o sistema identifica o sentimento predominante (positivo, negativo, neutro) e a confiança na análise.
-Interface Amigável: Uma interface simples, proporcionando uma experiência de usuário agradável.
-Resposta Rápida: Processamento rápido para fornecer resultados em tempo real.
+  - Análise de Sentimentos: O sistema identifica o sentimento predominante no texto e a confiança na análise, fornecendo uma interpretação clara das emoções do usuário.
+  - Interface Amigável: Uma interface simples e intuitiva para uma experiência de usuário agradável e acessível.
+  - Resposta Rápida: Processamento de texto em tempo real, oferecendo resultados instantâneos.
 
 # 🛠️ Tecnologias Utilizadas
-Backend: FastAPI - para construir uma API robusta e rápida.
-Machine Learning: Biblioteca Transformers - para processamento e análise de sentimentos.
-Frontend: HTML e CSS - para uma interface de usuário interativa.
+  - Backend: FastAPI - uma framework rápida e eficiente para construir a API do projeto.
+  - Machine Learning: Biblioteca Transformers - usada para processamento de linguagem natural e análise de sentimentos.
+  - Frontend: HTML e CSS - para uma interface de usuário interativa.
