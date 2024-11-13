@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Sentimentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            flex-direction: column;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .input-container {
+            position: relative;
+            margin: 20px 0;
+        }
+        input[type="text"] {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .image-container {
+            margin-top: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Como você está se sentindo hoje?</h2>
+        <div class="input-container">
+            <input type="text" id="text-input" placeholder="Escreva brevemente...">
+        </div>
+        <button onclick="analyzeSentiment()">Analisar Sentimento</button>
+        <div class="image-container">
+            <img src="homeImage.png" alt="Imagem de mãos dadas" width="200">
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        async function analyzeSentiment() {
+            const text = document.getElementById("text-input").value;
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "Analisando...";
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/analyze_sentiment", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erro ao analisar o sentimento");
+                }
+
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <p>Sentimento: ${data.sentiment.label}</p>
+                    <p>Confiança: ${(data.sentiment.score * 100).toFixed(2)}%</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
