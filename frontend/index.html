@@ -1,92 +1,124 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análise de Sentimentos</title>
+    <title>Detecção de Emoções</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            background-color: #f4f4f4;
+            padding: 0;
+            background: #f3f4f6;
+            display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #333;
         }
-        .container {
-            text-align: center;
-            padding: 20px;
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #444;
         }
-        h2 {
-            font-size: 24px;
+
+        #emotion {
+            color: #0066cc;
             font-weight: bold;
-            color: #333;
         }
-        .input-container {
+
+        video {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .progress-container {
             position: relative;
-            margin: 20px 0;
-        }
-        input[type="text"] {
-            width: 100%;
-            max-width: 400px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
+            height: 10px;
+            background: #e0e0e0;
             border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+            width: 640px; 
         }
-        .image-container {
-            margin-top: 20px;
-        }
-        .result {
-            margin-top: 20px;
-            font-size: 16px;
-            color: #333;
+
+        .progress-bar {
+            position: absolute;
+            height: 100%;
+            width: 0;
+            background: #0066cc;
+            transition: width 1s linear;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Como você está se sentindo hoje?</h2>
-        <div class="input-container">
-            <input type="text" id="text-input" placeholder="Escreva brevemente...">
+        <h1>Emoção Detectada: <span id="emotion">Carregando...</span></h1>
+        <video id="video" width="640" height="480" autoplay></video>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
         </div>
-        <button onclick="analyzeSentiment()">Analisar Sentimento</button>
-        <div class="image-container">
-            <img src="homeImage.png" alt="Imagem de mãos dadas" width="200">
-        </div>
-        <div class="result" id="result"></div>
     </div>
 
     <script>
-        async function analyzeSentiment() {
-            const text = document.getElementById("text-input").value;
-            const resultDiv = document.getElementById("result");
-            resultDiv.innerHTML = "Analisando...";
+        async function setupCamera() {
+            const video = document.getElementById("video");
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+        }
+
+        async function captureAndSendFrame() {
+            const video = document.getElementById("video");
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext("2d");
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg"));
+            const formData = new FormData();
+            formData.append("image", blob, "frame.jpg");
+
+            const progressBar = document.getElementById("progress-bar");
+            progressBar.style.width = "0%"; 
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/analyze_sentiment", {
+                // Simula progresso da barra
+                progressBar.style.width = "100%";
+
+                const response = await fetch("http://127.0.0.1:5000/detect_emotion", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ text: text })
+                    body: formData
                 });
-
-                if (!response.ok) {
-                    throw new Error("Erro ao analisar o sentimento");
-                }
-
                 const data = await response.json();
-                resultDiv.innerHTML = `
-                    <p>Sentimento: ${data.sentiment.label}</p>
-                    <p>Confiança: ${(data.sentiment.score * 100).toFixed(2)}%</p>
-                `;
+                document.getElementById("emotion").innerText = data.emotion || "Erro na detecção";
+
+                setTimeout(() => {
+                    progressBar.style.width = "0%";
+                }, 1000);
+
             } catch (error) {
-                resultDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+                console.error("Erro ao enviar a imagem:", error);
+                document.getElementById("emotion").innerText = "Erro na detecção";
+                progressBar.style.width = "0%"; 
             }
         }
+
+        setupCamera();
+
+        // Captura e envia a imagem a cada segundo
+        setInterval(captureAndSendFrame, 1000);
     </script>
 </body>
 </html>
